@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Major Triad Flash Drill</title>
+<title>Sight Reading Drills</title>
 <meta name="theme-color" content="#EDF0F2" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0D1418" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Triad Drill">
+<meta name="apple-mobile-web-app-title" content="Sight Reading">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -146,6 +146,23 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
 .legend { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); max-width: 66ch; }
 .legend strong { color: var(--ink); font-weight: 500; }
 
+
+[hidden] { display: none !important; }
+.tabs { display: flex; gap: 6px; padding: 4px; border: 1px solid var(--rule); border-radius: 12px; background: var(--card); align-self: flex-start; }
+.tab { min-height: 44px; padding: 10px 20px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 600 15px/1 var(--font-body); cursor: pointer; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.page { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.c-answer { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 24px; margin-top: 2px; }
+.c-field { display: flex; align-items: center; gap: 12px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.qbtn { min-height: 44px; }
+.chip.ok { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.chip.bad { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+.weaklist.wide li { grid-template-columns: auto minmax(0, 1fr) auto; }
+.weaklist.wide .wl { font-size: 20px; }
+.c-reveal { margin: 4px 0 0; min-height: 1.4em; text-align: center; font: 400 13px/1.4 var(--font-mono); color: var(--muted); visibility: hidden; }
+.drill.checked .c-reveal { visibility: visible; }
+
 @media (prefers-reduced-motion: reduce) { .note { transition: none; } }
 </style>
 <style>
@@ -157,9 +174,16 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
 <main class="wrap">
   <header>
     <p class="eyebrow">Guitar sight reading</p>
-    <h1>Major Triad Flash Drill</h1>
-    <p class="lede">Four notes at a time, no rhythm. Type the name of each note in its blank, then check. Drills you miss or answer slowly come back more often.</p>
+    <h1 id="title">Major Triad Flash Drill</h1>
+    <p class="lede" id="lede">Four notes at a time, no rhythm. Type the name of each note in its blank, then check. Drills you miss or answer slowly come back more often.</p>
   </header>
+
+  <div class="tabs" role="tablist" aria-label="Drill pages">
+    <button type="button" class="tab" role="tab" id="tab-triads" aria-selected="true" aria-controls="page-triads">Triads</button>
+    <button type="button" class="tab" role="tab" id="tab-chords" aria-selected="false" aria-controls="page-chords" tabindex="-1">Chords</button>
+  </div>
+
+  <div class="page" id="page-triads" role="tabpanel" aria-labelledby="tab-triads">
 
   <section class="card drill" id="drill" aria-label="Flash drill">
     <div class="drill-top">
@@ -243,6 +267,77 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   </section>
 
   <p class="legend">Type letters A to G. Notes are in written pitch, as printed on the page. The guitar sounds an octave lower. After you check, each note shows <strong>string · fret</strong> in first position: string 1 is the thin high E, and open means no finger. Leave a blank empty if you do not know it.</p>
+  </div>
+
+  <div class="page" id="page-chords" role="tabpanel" aria-labelledby="tab-chords" hidden>
+    <section class="card drill" id="c-drill" aria-label="Chord drill">
+      <div class="drill-top">
+        <span id="c-counter">Chord 1</span>
+        <span class="tag" id="c-tag" aria-live="polite">Name the chord</span>
+      </div>
+
+      <svg id="c-staff" viewBox="0 0 440 176" role="img" aria-label="A three-note chord stacked on a treble staff">
+        <g>
+          <line class="staff-line" x1="6" x2="430" y1="103" y2="103"/>
+          <line class="staff-line" x1="6" x2="430" y1="87" y2="87"/>
+          <line class="staff-line" x1="6" x2="430" y1="71" y2="71"/>
+          <line class="staff-line" x1="6" x2="430" y1="55" y2="55"/>
+          <line class="staff-line" x1="6" x2="430" y1="39" y2="39"/>
+          <line class="staff-line" x1="6" x2="6" y1="39" y2="103"/>
+          <line class="staff-line" x1="430" x2="430" y1="39" y2="103"/>
+        </g>
+        <path class="clef" transform="translate(14.8 103) scale(0.064 -0.064)" d="M314 801Q300 854 291.0 906.0Q282 958 282 1012Q282 1059 288.5 1100.5Q295 1142 307 1177Q320 1217 341.0 1252.5Q362 1288 385.5 1311.0Q409 1334 427 1334Q451 1334 493 1249Q514 1206 524.0 1156.0Q534 1106 534 1049Q534 978 515.0 907.5Q496 837 459.5 775.0Q423 713 372 666L407 498Q422 500 432.0 501.0Q442 502 447 502Q508 502 556.0 467.5Q604 433 632.5 377.0Q661 321 661 254Q661 177 621.5 115.5Q582 54 503 25Q508 8 532 -117Q538 -147 541.0 -164.5Q544 -182 545.0 -195.0Q546 -208 546 -225Q546 -275 521.5 -314.5Q497 -354 455.5 -376.0Q414 -398 363 -398Q311 -398 271.0 -378.5Q231 -359 208.0 -324.5Q185 -290 185 -245Q185 -197 211.5 -165.0Q238 -133 287 -133Q329 -133 355.5 -163.5Q382 -194 382 -236Q382 -272 357.0 -299.0Q332 -326 292 -326H282Q308 -365 364 -365Q433 -365 472.0 -320.0Q511 -275 511 -205Q511 -188 507.0 -159.5Q503 -131 493 -91Q483 -51 477.5 -25.0Q472 1 470 12Q436 2 390 2Q304 2 222 52Q142 102 96.0 184.0Q50 266 50 361Q50 451 91 530Q132 609 192.5 675.0Q253 741 314 801ZM341 826Q364 838 390.0 870.5Q416 903 440.0 945.0Q464 987 479.0 1029.5Q494 1072 494 1106Q494 1142 483.0 1163.0Q472 1184 445 1184Q421 1184 398.5 1162.0Q376 1140 358.5 1103.5Q341 1067 331.0 1022.0Q321 977 321 930Q321 898 327.5 872.0Q334 846 341 826ZM398 379Q371 373 347.0 353.5Q323 334 308.5 306.5Q294 279 294 248Q294 223 307.0 196.5Q320 170 339 154Q352 142 365 136Q380 129 380 123Q380 120 370 117Q332 126 301.5 151.0Q271 176 253.5 211.5Q236 247 236 287Q236 330 253.5 370.0Q271 410 302.5 442.0Q334 474 374 490L345 641Q229 547 174.5 456.5Q120 366 120 277Q120 212 154.0 156.0Q188 100 247.0 65.5Q306 31 380 31Q400 31 420.5 35.0Q441 39 464 45ZM495 55Q593 97 593 227Q593 270 571.0 305.5Q549 341 512.0 362.0Q475 383 429 383Z"/>
+        <g id="c-notes"></g>
+      </svg>
+
+      <div class="c-answer">
+        <label class="c-field">Root <input class="blank" id="c-root" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Root note of the chord"></label>
+        <div class="seg" role="group" aria-label="Chord quality">
+          <button type="button" class="chip qbtn" id="q-major" aria-pressed="false">Major</button>
+          <button type="button" class="chip qbtn" id="q-minor" aria-pressed="false">Minor</button>
+          <button type="button" class="chip qbtn" id="q-dim" aria-pressed="false">Dim</button>
+        </div>
+      </div>
+      <p class="c-reveal movement" id="c-reveal"></p>
+
+      <div class="actions">
+        <button type="button" class="primary" id="c-main">Check</button>
+        <span class="keyhint">or press Enter · keys 1 2 3 pick the quality</span>
+      </div>
+    </section>
+
+    <section class="card spots" aria-label="Weak chords">
+      <div class="spots-head">
+        <h2>Weak spots</h2>
+        <span class="queue" id="c-queue"></span>
+      </div>
+      <p class="summary" id="c-summary"></p>
+      <ol class="weaklist wide" id="c-weaklist"></ol>
+      <p class="empty" id="c-weakempty"></p>
+      <p class="how">A chord joins the repeat queue when you miss its root or quality, or take much longer than usual. It leaves after two clean, quick answers. It is kept apart from the triad history.</p>
+      <div class="spots-foot">
+        <button type="button" class="secondary" id="c-reset">Reset history</button>
+        <span class="sync" id="c-sync">History is kept on this device.</span>
+      </div>
+    </section>
+
+    <section class="card settings" aria-label="Chord settings">
+      <fieldset>
+        <legend>Practice</legend>
+        <div class="seg">
+          <span class="opt"><input type="radio" id="c-pr-adaptive" name="cpractice" value="adaptive"><label for="c-pr-adaptive">Focus on weak spots</label></span>
+          <span class="opt"><input type="radio" id="c-pr-random" name="cpractice" value="random"><label for="c-pr-random">Random</label></span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Chords</legend>
+        <div class="seg" id="c-quals"></div>
+      </fieldset>
+      <p class="note-small span-all">These are the seven triads built on the notes of C major, so no sharps or flats: C, F and G major; D, E and A minor; B diminished. Each is three notes stacked in thirds, root on the bottom.</p>
+    </section>
+
+    <p class="legend">Type the root, A to G, then tap the quality. <strong>Major</strong> has a major third on the bottom, <strong>minor</strong> a minor third, and <strong>diminished</strong> two minor thirds. Notes are in written pitch, as printed on the page. The guitar sounds an octave lower.</p>
+  </div>
 </main>
 
 <script>
@@ -260,6 +355,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   var KEY = 'triad-drill-settings';
   var SKEY = 'triad-drill-stats-v1';
   var NS = 'http://www.w3.org/2000/svg';
+  var page = 'triads', pageMain = {}, pageShow = {};
   var WEAK = 0.7;      /* a seen drill with a score at or above this is in the repeat queue */
   var MAXDRILLS = 400; /* history keeps this many distinct drills, newest first */
 
@@ -291,6 +387,8 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   var tagEl = document.getElementById('tag');
   var counterEl = document.getElementById('counter');
   var mainBtn = document.getElementById('main');
+  pageMain.triads = mainBtn;
+  pageShow.triads = function () { startT = performance.now(); timeValid = true; };
   var rootsEl = document.getElementById('roots');
   var queueEl = document.getElementById('queue');
   var summaryEl = document.getElementById('summary');
@@ -622,7 +720,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     var t = e.target;
     if (t && t.closest && t.closest('button, input, select, textarea, a, label')) return;
     e.preventDefault();
-    mainBtn.click();
+    pageMain[page].click();
   });
   /* A drill answered while the tab was in the background is not timed. */
   document.addEventListener('visibilitychange', function () { if (document.hidden) timeValid = false; });
@@ -657,6 +755,364 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
       });
     }).catch(function () {});
   }
+
+  /* ================= Chords page: name a stacked triad ================= */
+  (function () {
+    var CH = [
+      { root: 'C', q: 'major' }, { root: 'D', q: 'minor' }, { root: 'E', q: 'minor' },
+      { root: 'F', q: 'major' }, { root: 'G', q: 'major' }, { root: 'A', q: 'minor' }, { root: 'B', q: 'dim' }
+    ];
+    var QL = ['major', 'minor', 'dim'];
+    var QN = { major: 'major', minor: 'minor', dim: 'diminished' };
+    var QCAP = { major: 'Major', minor: 'Minor', dim: 'Dim' };
+    var CKEY = 'chord-drill-settings', CSKEY = 'chord-drill-stats-v1';
+    var CX = (X0 + X1) / 2;
+
+    var cst = { quals: QL.slice(), adaptive: true };
+    try {
+      var sv = JSON.parse(localStorage.getItem(CKEY) || 'null');
+      if (sv) {
+        if (Array.isArray(sv.quals)) cst.quals = sv.quals.filter(function (q) { return QL.indexOf(q) > -1; });
+        if (!cst.quals.length) cst.quals = QL.slice();
+        if (sv.adaptive === false) cst.adaptive = false;
+      }
+    } catch (e) {}
+    function csave() { try { localStorage.setItem(CKEY, JSON.stringify(cst)); } catch (e) {} }
+
+    function emptyC() { return { v: 1, g: { k: 0, t: 0, n: 0, ok: 0 }, chords: {}, roots: {}, quals: {} }; }
+    function saneC(s) { return s && s.v === 1 && s.g && typeof s.chords === 'object' && typeof s.roots === 'object' && typeof s.quals === 'object' ? s : null; }
+    var cs = emptyC();
+    try { var l2 = saneC(JSON.parse(localStorage.getItem(CSKEY) || 'null')); if (l2) cs = l2; } catch (e) {}
+
+    var drillEl = document.getElementById('c-drill');
+    var notesG = document.getElementById('c-notes');
+    var rootIn = document.getElementById('c-root');
+    var revealEl = document.getElementById('c-reveal');
+    var tagEl = document.getElementById('c-tag');
+    var counterEl = document.getElementById('c-counter');
+    var mainBtn = document.getElementById('c-main');
+    var qualsEl = document.getElementById('c-quals');
+    var queueEl = document.getElementById('c-queue');
+    var summaryEl = document.getElementById('c-summary');
+    var listEl = document.getElementById('c-weaklist');
+    var emptyEl = document.getElementById('c-weakempty');
+    var resetBtn = document.getElementById('c-reset');
+    var syncEl = document.getElementById('c-sync');
+    var qBtns = {};
+    QL.forEach(function (q) { qBtns[q] = document.getElementById('q-' + q); });
+
+    var cur = null, checked = false, count = 1, selQ = null, lastName = '', lastBottom = null;
+    var tally = { right: 0, total: 0 };
+    var startT = 0, timeValid = true;
+
+    pageMain.chords = mainBtn;
+    pageShow.chords = function () { startT = performance.now(); timeValid = true; };
+
+    function nm(ch) { return ch.root + ' ' + QN[ch.q]; }
+    function spell(ch) { var i = LETTERS.indexOf(ch.root); return [LETTERS[i], LETTERS[(i + 2) % 7], LETTERS[(i + 4) % 7]]; }
+    function bottoms(ch) {
+      var idx = LETTERS.indexOf(ch.root), out = [];
+      for (var n = -2; n <= 5; n++) if (((n + 30) % 7) === idx) out.push(n);
+      return out;
+    }
+    function active() {
+      var a = CH.filter(function (c) { return cst.quals.indexOf(c.q) > -1; });
+      return a.length ? a : CH;
+    }
+
+    /* Weakness of one chord: its own miss rate and slowness, plus how often its root letter and its quality are missed. */
+    function score(ch) {
+      var d = cs.chords[nm(ch)], r = cs.roots[ch.root], q = cs.quals[ch.q];
+      var dErr = d ? d.e : 0.3;
+      var dSlow = d && d.t && cs.g.t ? clamp(d.t / cs.g.t - 1, 0, 1.5) : 0;
+      var eN = ((r ? r.e : 0.2) + (q ? q.e : 0.2)) / 2;
+      return { w: 3 * dErr + 1.5 * dSlow + 2 * eN, seen: !!d, recent: !!d && (cs.g.k - d.l) < 3 };
+    }
+
+    function pickChord() {
+      var act = active(), pool = act.filter(function (c) { return nm(c) !== lastName; });
+      if (!pool.length) pool = act;
+      if (!cst.adaptive || !cs.g.k) return choice(pool);
+      var scored = pool.map(function (c) { return { c: c, s: score(c) }; });
+      var weak = scored.filter(function (x) { return x.s.seen && !x.s.recent && x.s.w >= WEAK; });
+      if (weak.length && Math.random() < Math.min(0.75, 0.4 + 0.1 * weak.length)) {
+        return weighted(weak, function (x) { return x.s.w; }).c;
+      }
+      return weighted(scored, function (x) { return (0.4 + x.s.w) * (x.s.recent ? 0.2 : 1); }).c;
+    }
+
+    function makeDrill() {
+      var ch = pickChord(), bs = bottoms(ch), pool = bs.filter(function (b) { return !(nm(ch) === lastName && b === lastBottom); });
+      if (!pool.length) pool = bs;
+      var b = choice(pool);
+      lastName = nm(ch); lastBottom = b;
+      return { ch: ch, bottom: b, notes: [b, b + 2, b + 4] };
+    }
+
+    function drawStaff() {
+      while (notesG.firstChild) notesG.removeChild(notesG.firstChild);
+      cur.notes.forEach(function (n) {
+        var cy = YB - n * S / 2;
+        for (var m = -2; m >= n; m -= 2) {
+          var ly = YB - m * S / 2;
+          notesG.appendChild(el('line', { x1: CX - RX * 1.65, x2: CX + RX * 1.65, y1: ly, y2: ly, 'class': 'ledger' }));
+        }
+        notesG.appendChild(el('ellipse', { cx: CX, cy: cy, rx: RX, ry: RY, transform: 'rotate(-20 ' + CX + ' ' + cy + ')', 'class': 'note' }));
+      });
+    }
+
+    function paintQuality() {
+      QL.forEach(function (q) {
+        qBtns[q].setAttribute('aria-pressed', selQ === q ? 'true' : 'false');
+        qBtns[q].className = 'chip qbtn';
+      });
+    }
+    function setQuality(q) {
+      if (checked) return;
+      selQ = q;
+      paintQuality();
+    }
+
+    function updateCounter() {
+      counterEl.textContent = 'Chord ' + count + (tally.total ? ' · ' + tally.right + ' of ' + tally.total + ' answers right' : '');
+    }
+    function setChecked(v, right) {
+      checked = v;
+      drillEl.classList.toggle('checked', v);
+      mainBtn.textContent = v ? 'Next chord' : 'Check';
+      tagEl.textContent = v ? nm(cur.ch) + ' · ' + right + ' of 2 right' : 'Name the chord';
+      updateCounter();
+    }
+
+    /* ---- Saving the history ---- */
+    var dbRef = null, writing = false, dirty = false;
+    function flush() {
+      if (!dbRef || writing || !dirty) return;
+      writing = true; dirty = false;
+      var body;
+      try { body = JSON.parse(JSON.stringify(cs)); } catch (e) { writing = false; return; }
+      dbRef.set(body).catch(function () {}).then(function () { writing = false; if (dirty) flush(); });
+    }
+    function persist() {
+      try { localStorage.setItem(CSKEY, JSON.stringify(cs)); } catch (e) {}
+      dirty = true;
+      flush();
+    }
+
+    function bump(map, key, wrong) {
+      var r = map[key] || (map[key] = { k: 0, m: 0, e: 0 }), x = wrong ? 1 : 0;
+      r.e = r.k ? r.e * 0.6 + x * 0.4 : x;
+      r.k++; r.m += x;
+    }
+    function record(rootWrong, qualWrong, time) {
+      var g = cs.g, any = rootWrong || qualWrong;
+      g.k++; g.n += 2;
+      if (!rootWrong) g.ok++;
+      if (!qualWrong) g.ok++;
+      if (time !== null) g.t = g.t ? g.t * 0.9 + time * 0.1 : time;
+      bump(cs.roots, cur.ch.root, rootWrong);
+      bump(cs.quals, cur.ch.q, qualWrong);
+      var key = nm(cur.ch), d = cs.chords[key] || (cs.chords[key] = { k: 0, m: 0, e: 0, t: 0, l: 0 }), x = any ? 1 : 0;
+      d.e = d.k ? d.e * 0.6 + x * 0.4 : x;
+      if (time !== null) d.t = d.t ? d.t * 0.5 + time * 0.5 : time;
+      d.k++; d.m += x; d.l = g.k;
+      persist();
+    }
+
+    function check() {
+      var time = timeValid ? Math.round(performance.now() - startT) : null;
+      if (time !== null && (time > 90000 || time < 400)) time = null;
+      var rootOk = rootIn.value.toUpperCase() === cur.ch.root, qualOk = selQ === cur.ch.q;
+      rootIn.readOnly = true;
+      rootIn.classList.add(rootOk ? 'ok' : 'bad');
+      QL.forEach(function (q) {
+        if (q === cur.ch.q) qBtns[q].classList.add('ok');
+        else if (q === selQ) qBtns[q].classList.add('bad');
+      });
+      var heads = notesG.querySelectorAll('.note'), all = rootOk && qualOk;
+      Array.prototype.forEach.call(heads, function (h) { h.classList.add(all ? 'ok' : 'bad'); });
+      revealEl.textContent = nm(cur.ch) + ' · ' + spell(cur.ch).join(' ') + (rootOk ? '' : ' · the root is ' + cur.ch.root);
+      var right = (rootOk ? 1 : 0) + (qualOk ? 1 : 0);
+      tally.right += right; tally.total += 2;
+      record(!rootOk, !qualOk, time);
+      setChecked(true, right);
+      renderSpots();
+    }
+
+    function newDrill(inc, focusFirst) {
+      if (inc) count++;
+      cur = makeDrill();
+      drawStaff();
+      rootIn.value = ''; rootIn.readOnly = false; rootIn.className = 'blank';
+      selQ = null; paintQuality();
+      revealEl.textContent = '';
+      setChecked(false, 0);
+      startT = performance.now(); timeValid = true;
+      if (focusFirst) rootIn.focus();
+    }
+
+    function renderSpots() {
+      var g = cs.g;
+      summaryEl.textContent = g.k ? g.k + (g.k === 1 ? ' chord' : ' chords') + ' checked · ' + Math.round(g.ok / g.n * 100) + '% of answers right' + (g.t ? ' · typical time ' + (g.t / 1000).toFixed(1) + ' s' : '') : '';
+      if (cst.adaptive) {
+        var q = active().filter(function (c) { var s = score(c); return s.seen && s.w >= WEAK; }).length;
+        queueEl.textContent = 'Repeat queue: ' + q + (q === 1 ? ' chord' : ' chords');
+      } else {
+        queueEl.textContent = 'Random order';
+      }
+      var rows = Object.keys(cs.chords).map(function (k) { return { k: k, r: cs.chords[k] }; })
+        .filter(function (x) { return x.r.m > 0 && x.r.e >= 0.15; })
+        .sort(function (a, b) { return (b.r.e - a.r.e) || (b.r.m - a.r.m); })
+        .slice(0, 4);
+      listEl.textContent = '';
+      rows.forEach(function (x) {
+        var ch = CH.filter(function (c) { return nm(c) === x.k; })[0];
+        if (!ch) return;
+        var li = document.createElement('li'), a = document.createElement('span'), b = document.createElement('span'), c = document.createElement('span');
+        a.className = 'wl'; a.textContent = x.k;
+        b.className = 'wp'; b.textContent = spell(ch).join(' ');
+        c.className = 'wm'; c.textContent = 'missed ' + x.r.m + ' of ' + x.r.k;
+        li.appendChild(a); li.appendChild(b); li.appendChild(c);
+        listEl.appendChild(li);
+      });
+      emptyEl.hidden = rows.length > 0;
+      emptyEl.textContent = g.k ? 'No weak chords right now.' : 'Your weakest chords will show here after a few drills.';
+    }
+
+    var armTimer = null;
+    function disarm() {
+      clearTimeout(armTimer);
+      resetBtn.classList.remove('armed');
+      resetBtn.textContent = 'Reset history';
+    }
+    resetBtn.addEventListener('click', function () {
+      if (!resetBtn.classList.contains('armed')) {
+        resetBtn.classList.add('armed');
+        resetBtn.textContent = 'Click again to erase';
+        armTimer = setTimeout(disarm, 4000);
+        return;
+      }
+      disarm();
+      cs = emptyC();
+      persist();
+      renderSpots();
+    });
+
+    function updateChips() {
+      QL.forEach(function (q) {
+        var b = document.getElementById('cq-' + q);
+        b.setAttribute('aria-pressed', cst.quals.indexOf(q) > -1 ? 'true' : 'false');
+      });
+    }
+    QL.forEach(function (q) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.id = 'cq-' + q; b.textContent = QCAP[q] === 'Dim' ? 'Diminished' : QCAP[q];
+      b.addEventListener('click', function () {
+        if (cst.quals.indexOf(q) > -1) {
+          if (cst.quals.length === 1) return;
+          cst.quals = cst.quals.filter(function (x) { return x !== q; });
+        } else {
+          cst.quals = cst.quals.concat([q]);
+        }
+        updateChips(); csave(); newDrill(false, false); renderSpots();
+      });
+      qualsEl.appendChild(b);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="cpractice"]'), function (i) {
+      i.addEventListener('change', function () { cst.adaptive = i.value === 'adaptive'; csave(); newDrill(false, false); renderSpots(); });
+    });
+
+    QL.forEach(function (q) { qBtns[q].addEventListener('click', function () { setQuality(q); }); });
+
+    rootIn.addEventListener('input', function () {
+      rootIn.value = rootIn.value.replace(/[^a-gA-G]/g, '').slice(-1).toUpperCase();
+    });
+    rootIn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); mainBtn.click(); }
+      else if (e.key === '1' || e.key === '2' || e.key === '3') { e.preventDefault(); setQuality(QL[Number(e.key) - 1]); }
+    });
+    rootIn.addEventListener('focus', function () { rootIn.select(); });
+    mainBtn.addEventListener('click', function () { if (checked) newDrill(true, true); else check(); });
+    document.addEventListener('keydown', function (e) {
+      if (page !== 'chords' || checked) return;
+      if (e.target && e.target.closest && e.target.closest('input, textarea, select')) return;
+      if (e.key === '1' || e.key === '2' || e.key === '3') setQuality(QL[Number(e.key) - 1]);
+    });
+    document.addEventListener('visibilitychange', function () { if (document.hidden) timeValid = false; });
+
+    document.getElementById(cst.adaptive ? 'c-pr-adaptive' : 'c-pr-random').checked = true;
+    updateChips();
+    newDrill(false, false);
+    renderSpots();
+
+    if (window.claude && window.claude.use) {
+      Promise.all([window.claude.use('db'), window.claude.use('user')]).then(function (r) {
+        var db = r[0], user = r[1];
+        if (!db || !user) return;
+        return user.id().then(function (id) {
+          if (!id) return;
+          var ref = db.doc('data/users/' + id + '/chords');
+          return ref.get().then(function (snap) {
+            var remote = snap.exists ? saneC(JSON.parse(JSON.stringify(snap.data()))) : null;
+            dbRef = ref;
+            if (remote && remote.g.k >= cs.g.k) {
+              cs = remote;
+              try { localStorage.setItem(CSKEY, JSON.stringify(cs)); } catch (e) {}
+            } else if (cs.g.k > 0) {
+              dirty = true; flush();
+            }
+            syncEl.textContent = 'History syncs across your devices.';
+            renderSpots();
+          });
+        });
+      }).catch(function () {});
+    }
+  })();
+
+  /* ================= Tabs ================= */
+  (function () {
+    var PAGES = ['triads', 'chords'];
+    var TITLES = { triads: 'Major Triad Flash Drill', chords: 'Chord Flash Drill' };
+    var LEDES = {
+      triads: 'Four notes at a time, no rhythm. Type the name of each note in its blank, then check. Drills you miss or answer slowly come back more often.',
+      chords: 'Three notes stacked on the staff. Type the root, tap major, minor or diminished, then check. Chords you miss or answer slowly come back more often.'
+    };
+    var titleEl = document.getElementById('title'), ledeEl = document.getElementById('lede');
+    function show(p, remember) {
+      page = p;
+      PAGES.forEach(function (x) {
+        document.getElementById('page-' + x).hidden = x !== p;
+        var t = document.getElementById('tab-' + x);
+        t.setAttribute('aria-selected', x === p ? 'true' : 'false');
+        t.tabIndex = x === p ? 0 : -1;
+      });
+      titleEl.textContent = TITLES[p];
+      ledeEl.textContent = LEDES[p];
+      document.title = TITLES[p];
+      if (pageShow[p]) pageShow[p]();
+      if (remember) {
+        try { localStorage.setItem('drill-page', p); } catch (e) {}
+        try { history.replaceState(null, '', '#' + p); } catch (e) {}
+      }
+    }
+    PAGES.forEach(function (p, i) {
+      var t = document.getElementById('tab-' + p);
+      t.addEventListener('click', function () { show(p, true); });
+      t.addEventListener('keydown', function (e) {
+        var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : -1;
+        if (j < 0 || j >= PAGES.length) return;
+        e.preventDefault(); show(PAGES[j], true); document.getElementById('tab-' + PAGES[j]).focus();
+      });
+    });
+    var start = 'triads';
+    try {
+      var h = (location.hash || '').replace('#', '');
+      var s = localStorage.getItem('drill-page');
+      if (PAGES.indexOf(h) > -1) start = h; else if (PAGES.indexOf(s) > -1) start = s;
+    } catch (e) {}
+    show(start, false);
+  })();
+
 })();
 </script>
 <script>

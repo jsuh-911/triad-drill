@@ -1,5 +1,5 @@
 /* Offline cache. Change CACHE to force every phone to fetch a fresh copy after you update the files. */
-var CACHE = 'triad-drill-v1';
+var CACHE = 'triad-drill-v2';
 var FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {

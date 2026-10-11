@@ -1,4 +1,4 @@
-MAJOR TRIAD FLASH DRILL: home-screen web app
+SIGHT READING DRILLS: home-screen web app (Triads and Chords pages)
 
 Files
   index.html              the whole app (fonts are embedded, no internet needed to run)
@@ -22,4 +22,4 @@ Notes
   Practice history is stored on that phone, inside the home-screen app. It does not sync to other
   devices and it is separate from the copy in Safari. Deleting the app deletes the history.
   To publish an update, replace the files on your host. The phone picks up the new version the
-  second time you open the app. To force it sooner, change CACHE in sw.js (for example to triad-drill-v2).
+  second time you open the app. To force it sooner, change CACHE in sw.js (for example to triad-drill-v3).
