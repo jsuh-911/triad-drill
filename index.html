@@ -163,6 +163,27 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
 .c-reveal { margin: 4px 0 0; min-height: 1.4em; text-align: center; font: 400 13px/1.4 var(--font-mono); color: var(--muted); visibility: hidden; }
 .drill.checked .c-reveal { visibility: visible; }
 
+.slot { display: none; width: 68px; max-width: 100%; min-height: 40px; padding: 2px 0 4px; border: 0; border-bottom: 2px solid var(--muted); border-radius: 0; background: transparent; color: var(--ink); font: 600 22px/1.1 var(--font-display); cursor: pointer; }
+.answers.fret .slot { display: block; }
+.answers.fret .blank { display: none; }
+.slot.active { border-bottom-color: var(--accent); background: var(--accent-soft); box-shadow: 0 2px 0 var(--accent); }
+.slot.ok { border-bottom-color: var(--accent); color: var(--accent); }
+.slot.bad { border-bottom-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+.fretboard { display: grid; grid-template-columns: 26px repeat(5, minmax(0, 1fr)); gap: 3px 0; margin-top: 8px; }
+.fb-h { font: 500 11px/1 var(--font-mono); color: var(--muted); text-align: center; padding: 2px 0 4px; }
+.fb-s { display: flex; align-items: center; justify-content: center; font: 500 12px/1 var(--font-mono); color: var(--muted); }
+.pos { position: relative; min-height: 40px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); cursor: pointer; font: 600 13px/1 var(--font-mono); }
+.pos::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: var(--sw, 1px); transform: translateY(-50%); background: var(--staff); opacity: 0.75; }
+.pos[data-f="0"] { border-right: 4px solid var(--staff); }
+.pos[data-f]:not([data-f="0"]) { border-right: 1px solid var(--rule); }
+.pos span { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; border-radius: 13px; }
+.pos:hover span { background: var(--accent-soft); }
+.pos.on span { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.pos.ok span { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.pos.bad span { background: var(--bad); color: var(--bg); box-shadow: none; }
+.pos.want span { box-shadow: inset 0 0 0 2px var(--accent); background: var(--accent-soft); min-width: 26px; }
+.pos:disabled { cursor: default; }
+.pos:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 @media (prefers-reduced-motion: reduce) { .note { transition: none; } }
 </style>
 <style>
@@ -174,12 +195,12 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
 <main class="wrap">
   <header>
     <p class="eyebrow">Guitar sight reading</p>
-    <h1 id="title">Major Triad Flash Drill</h1>
-    <p class="lede" id="lede">Four notes at a time, no rhythm. Type the name of each note in its blank, then check. Drills you miss or answer slowly come back more often.</p>
+    <h1 id="title">Note Flash Drill</h1>
+    <p class="lede" id="lede">Four notes at a time, no rhythm. Name each note by typing its letter or by tapping it on the fretboard, then check. Notes you miss or answer slowly come back more often.</p>
   </header>
 
   <div class="tabs" role="tablist" aria-label="Drill pages">
-    <button type="button" class="tab" role="tab" id="tab-triads" aria-selected="true" aria-controls="page-triads">Triads</button>
+    <button type="button" class="tab" role="tab" id="tab-triads" aria-selected="true" aria-controls="page-triads">Notes</button>
     <button type="button" class="tab" role="tab" id="tab-chords" aria-selected="false" aria-controls="page-chords" tabindex="-1">Chords</button>
   </div>
 
@@ -206,11 +227,12 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     </svg>
 
     <div class="answers" id="answers">
-      <div class="cell"><input class="blank" id="b0" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 1"><span class="fix"></span><span class="loc"></span></div>
-      <div class="cell"><input class="blank" id="b1" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 2"><span class="fix"></span><span class="loc"></span></div>
-      <div class="cell"><input class="blank" id="b2" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 3"><span class="fix"></span><span class="loc"></span></div>
-      <div class="cell"><input class="blank" id="b3" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 4"><span class="fix"></span><span class="loc"></span></div>
+      <div class="cell"><input class="blank" id="b0" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 1"><button type="button" class="slot" aria-label="Fretboard answer for note 1">–</button><span class="fix"></span><span class="loc"></span></div>
+      <div class="cell"><input class="blank" id="b1" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 2"><button type="button" class="slot" aria-label="Fretboard answer for note 2">–</button><span class="fix"></span><span class="loc"></span></div>
+      <div class="cell"><input class="blank" id="b2" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 3"><button type="button" class="slot" aria-label="Fretboard answer for note 3">–</button><span class="fix"></span><span class="loc"></span></div>
+      <div class="cell"><input class="blank" id="b3" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Name of note 4"><button type="button" class="slot" aria-label="Fretboard answer for note 4">–</button><span class="fix"></span><span class="loc"></span></div>
     </div>
+    <div class="fretboard" id="fretboard" hidden aria-label="Fretboard, first position. String 1 is the thin high E."></div>
     <p class="movement" id="movement"></p>
 
     <div class="actions">
@@ -227,7 +249,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     <p class="summary" id="summary"></p>
     <ol class="weaklist" id="weaklist"></ol>
     <p class="empty" id="weakempty"></p>
-    <p class="how">A drill joins the repeat queue when you miss a note or take much longer than usual. It leaves after two clean, quick answers. Drills with notes you often miss are also picked more often.</p>
+    <p class="how">A drill joins the repeat queue when you miss a note or take much longer than usual. It leaves after two clean, quick answers. Drills with notes you often miss are also picked more often. In mixed mode, notes you miss are picked more often.</p>
     <div class="spots-foot">
       <button type="button" class="secondary" id="reset">Reset history</button>
       <span class="sync" id="sync">History is kept on this device.</span>
@@ -235,6 +257,20 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   </section>
 
   <section class="card settings" aria-label="Drill settings">
+    <fieldset>
+      <legend>Notes from</legend>
+      <div class="seg">
+        <span class="opt"><input type="radio" id="pt-triad" name="pattern" value="triad"><label for="pt-triad">Triad tones</label></span>
+        <span class="opt"><input type="radio" id="pt-mixed" name="pattern" value="mixed"><label for="pt-mixed">Mixed notes</label></span>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Answer by</legend>
+      <div class="seg">
+        <span class="opt"><input type="radio" id="an-type" name="answer" value="type"><label for="an-type">Typing the name</label></span>
+        <span class="opt"><input type="radio" id="an-fret" name="answer" value="fret"><label for="an-fret">Tapping the fretboard</label></span>
+      </div>
+    </fieldset>
     <fieldset>
       <legend>Practice</legend>
       <div class="seg">
@@ -250,7 +286,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
         <span class="opt"><input type="radio" id="lv2" name="level" value="2"><label for="lv2">All six</label></span>
       </div>
     </fieldset>
-    <fieldset>
+    <fieldset id="fs-order">
       <legend>Order</legend>
       <div class="seg">
         <span class="opt"><input type="radio" id="or-up" name="order" value="up"><label for="or-up">Up</label></span>
@@ -259,14 +295,14 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
         <span class="opt"><input type="radio" id="or-shuffle" name="order" value="shuffle"><label for="or-shuffle">Shuffled</label></span>
       </div>
     </fieldset>
-    <fieldset>
+    <fieldset id="fs-roots">
       <legend>Triads</legend>
       <div class="seg" id="roots"></div>
     </fieldset>
-    <p class="note-small span-all">C, F and G are the only major triads with no sharps or flats, so they are the only ones here. The rest arrive with key signatures. F needs the D string to fit four notes in first position.</p>
+    <p class="note-small span-all" id="triad-note">C, F and G are the only major triads with no sharps or flats, so they are the only ones here. The rest arrive with key signatures. F needs the D string to fit four notes in first position.</p>
   </section>
 
-  <p class="legend">Type letters A to G. Notes are in written pitch, as printed on the page. The guitar sounds an octave lower. After you check, each note shows <strong>string · fret</strong> in first position: string 1 is the thin high E, and open means no finger. Leave a blank empty if you do not know it.</p>
+  <p class="legend">Type letters A to G, or tap the note on the fretboard: pick a slot, then tap string and fret (any spot with the right pitch counts). <strong>Mixed notes</strong> move by steps and skips in either direction, so each note has to be read; triad tones follow a pattern you can start to predict. Notes are in written pitch, as printed on the page. The guitar sounds an octave lower. After you check, each note shows <strong>string · fret</strong> in first position: string 1 is the thin high E, and open means no finger. Leave a blank empty if you do not know it.</p>
   </div>
 
   <div class="page" id="page-chords" role="tabpanel" aria-labelledby="tab-chords" hidden>
@@ -359,7 +395,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   var WEAK = 0.7;      /* a seen drill with a score at or above this is in the repeat queue */
   var MAXDRILLS = 400; /* history keeps this many distinct drills, newest first */
 
-  var state = { level: 0, order: 'either', roots: ROOTS.slice(), adaptive: true };
+  var state = { level: 0, order: 'either', roots: ROOTS.slice(), adaptive: true, pattern: 'triad', answer: 'type' };
   try {
     var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved) {
@@ -368,6 +404,8 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
       if (['up', 'down', 'either', 'shuffle'].indexOf(saved.order) > -1) state.order = saved.order;
       if (Array.isArray(saved.roots)) state.roots = saved.roots.filter(function (r) { return ROOTS.indexOf(r) > -1; });
       if (saved.adaptive === false) state.adaptive = false;
+      if (saved.pattern === 'mixed') state.pattern = 'mixed';
+      if (saved.answer === 'fret') state.answer = 'fret';
     }
   } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
@@ -404,6 +442,92 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   var count = 1, drill = null, checked = false, last = '';
   var tally = { right: 0, total: 0 };
   var startT = 0, timeValid = true;
+
+  /* Fretboard answers: four slots, one per note, filled by tapping string and fret. */
+  var slots = answersEl.querySelectorAll('.slot');
+  var fbEl = document.getElementById('fretboard');
+  var posBtns = [], picks = [null, null, null, null], activeSlot = 0;
+  function soundingOf(nt) { return 12 * (nt.o + 1) + SEMI[nt.l] - 12; }
+  function posText(p) { return p ? p.s + '·' + p.f : '–'; }
+  function paintSlots() {
+    for (var i = 0; i < slots.length; i++) {
+      slots[i].textContent = posText(picks[i]);
+      slots[i].classList.toggle('active', !checked && i === activeSlot);
+    }
+    posBtns.forEach(function (b) {
+      var nums = [];
+      picks.forEach(function (p, i) { if (p && p.s === b.s && p.f === b.f) nums.push(i + 1); });
+      b.lab.textContent = nums.join(',');
+      b.el.classList.toggle('on', nums.length > 0);
+    });
+  }
+  (function buildFretboard() {
+    function cell(cls, text) { var d = document.createElement('div'); d.className = cls; d.textContent = text; return d; }
+    fbEl.appendChild(cell('fb-h', ''));
+    ['open', '1', '2', '3', '4'].forEach(function (t) { fbEl.appendChild(cell('fb-h', t)); });
+    STR.forEach(function (st) {
+      var s = st[0];
+      fbEl.appendChild(cell('fb-s', String(s)));
+      for (var f = 0; f <= 4; f++) {
+        (function (f) {
+          var b = document.createElement('button'), lab = document.createElement('span');
+          b.type = 'button'; b.className = 'pos'; b.setAttribute('data-f', f);
+          b.style.setProperty('--sw', (1 + (s - 1) * 0.5) + 'px');
+          b.setAttribute('aria-label', 'String ' + s + ', ' + (f === 0 ? 'open' : 'fret ' + f));
+          b.appendChild(lab);
+          b.addEventListener('click', function () {
+            if (checked) return;
+            picks[activeSlot] = { s: s, f: f };
+            for (var k = 1; k <= picks.length; k++) {
+              var j = (activeSlot + k) % picks.length;
+              if (!picks[j]) { activeSlot = j; break; }
+            }
+            paintSlots();
+          });
+          fbEl.appendChild(b);
+          posBtns.push({ s: s, f: f, el: b, lab: lab });
+        })(f);
+      }
+    });
+  })();
+  Array.prototype.forEach.call(slots, function (sl, i) {
+    sl.addEventListener('click', function () { if (!checked) { activeSlot = i; paintSlots(); } });
+  });
+  function isRight(i, nt) {
+    if (state.answer === 'fret') { var p = picks[i]; return !!p && STR[p.s - 1][1] + p.f === soundingOf(nt); }
+    return inputs[i].value.toUpperCase() === nt.l;
+  }
+  function lockSlot(i, ok, nt) {
+    if (state.answer !== 'fret') { inputs[i].readOnly = true; inputs[i].classList.add(ok ? 'ok' : 'bad'); return; }
+    slots[i].classList.add(ok ? 'ok' : 'bad');
+    var p = picks[i], w = ok ? null : locate(nt);
+    posBtns.forEach(function (b) {
+      if (p && b.s === p.s && b.f === p.f) b.el.classList.add(ok ? 'ok' : 'bad');
+      if (w && b.s === w.s && b.f === w.f) b.el.classList.add('want');
+    });
+  }
+
+  /* Mixed notes: steps and skips in either direction, kept inside the playable range. */
+  function genMixed() {
+    var lo = LO[state.level], n = lo + Math.floor(Math.random() * (HI - lo + 1)), seq = [n];
+    var STEPS = [[1, 4], [-1, 4], [2, 3], [-2, 3], [3, 1.2], [-3, 1.2], [4, 0.8], [-4, 0.8]];
+    while (seq.length < 4) {
+      var c = seq[seq.length - 1];
+      var opts = STEPS.filter(function (s) { var m = c + s[0]; return m >= lo && m <= HI; });
+      seq.push(c + weighted(opts, function (s) { return s[1]; })[0]);
+    }
+    return seq.map(noteFromN);
+  }
+  function makeMixed() {
+    var pool = [];
+    for (var i = 0; i < 10; i++) { var s = genMixed(), k = 'mix:' + ids(s); if (k !== last) pool.push({ seq: s, key: k }); }
+    if (!pool.length) { var s0 = genMixed(); pool.push({ seq: s0, key: 'mix:' + ids(s0) }); }
+    var pick = state.adaptive && stats.g.k
+      ? weighted(pool, function (x) { var e = 0; x.seq.forEach(function (nt) { var r = stats.notes[nt.n]; e += r ? r.e : 0.2; }); return 0.3 + 2 * e / x.seq.length; })
+      : choice(pool);
+    last = pick.key;
+    return { root: null, seq: pick.seq, mode: 'mixed', key: pick.key };
+  }
 
   function noteFromN(n) { var a = n + 30; return { n: n, l: LETTERS[a % 7], o: Math.floor(a / 7) }; }
 
@@ -477,6 +601,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   }
 
   function makeDrill() {
+    if (state.pattern === 'mixed') return makeMixed();
     var cands = candidates(), pool = cands.filter(function (c) { return c.key !== last; });
     if (!pool.length) pool = cands;
     var pick;
@@ -515,6 +640,12 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
 
   /* Empty blanks, and fill in the hidden string and fret text that appears after checking. */
   function resetBlanks() {
+    var fretMode = state.answer === 'fret';
+    answersEl.classList.toggle('fret', fretMode);
+    fbEl.hidden = !fretMode;
+    picks = [null, null, null, null]; activeSlot = 0;
+    Array.prototype.forEach.call(slots, function (sl) { sl.className = 'slot'; });
+    posBtns.forEach(function (b) { b.el.className = 'pos'; });
     drill.seq.forEach(function (nt, i) {
       var p = locate(nt);
       inputs[i].value = '';
@@ -541,8 +672,12 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     checked = v;
     drillEl.classList.toggle('checked', v);
     mainBtn.textContent = v ? 'Next drill' : 'Check';
-    var modeText = { up: 'ascending', down: 'descending', shuffle: 'shuffled order' }[drill.mode];
-    tagEl.textContent = v ? drill.root + ' major, ' + modeText + ' · ' + right + ' of 4 right' : 'Type the name of each note';
+    var label = drill.mode === 'mixed' ? 'Mixed notes' : drill.root + ' major, ' + { up: 'ascending', down: 'descending', shuffle: 'shuffled order' }[drill.mode];
+    tagEl.textContent = v ? label + ' · ' + right + ' of 4 right' : (state.answer === 'fret' ? 'Tap each note on the fretboard' : 'Type the name of each note');
+    fbEl.classList.toggle('locked', v);
+    posBtns.forEach(function (b) { b.el.disabled = v; });
+    Array.prototype.forEach.call(slots, function (sl) { sl.disabled = v; });
+    paintSlots();
     updateCounter();
   }
 
@@ -571,6 +706,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
       r.e = r.k ? r.e * 0.6 + x * 0.4 : x;
       r.k++; r.m += x;
     });
+    if (drill.mode !== 'mixed') {
     var d = stats.drills[drill.key] || (stats.drills[drill.key] = { k: 0, e: 0, t: 0, l: 0 }), xe = nWrong / wrong.length;
     d.e = d.k ? d.e * 0.6 + xe * 0.4 : xe;
     if (time !== null) d.t = d.t ? d.t * 0.5 + time * 0.5 : time;
@@ -580,6 +716,7 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
       keys.sort(function (a, b) { return stats.drills[a].l - stats.drills[b].l; });
       keys.slice(0, keys.length - MAXDRILLS).forEach(function (k) { delete stats.drills[k]; });
     }
+    }
     persist();
   }
 
@@ -587,11 +724,11 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     var right = 0, heads = notesG.querySelectorAll('.note'), wrong = [];
     var time = timeValid ? Math.round(performance.now() - startT) : null;
     if (time !== null && (time > 90000 || time < 400)) time = null;
+    if (state.answer === 'fret' || drill.mode === 'mixed') time = null;
     drill.seq.forEach(function (nt, i) {
-      var ok = inputs[i].value.toUpperCase() === nt.l;
+      var ok = isRight(i, nt);
       var fix = cells[i].querySelector('.fix');
-      inputs[i].readOnly = true;
-      inputs[i].classList.add(ok ? 'ok' : 'bad');
+      lockSlot(i, ok, nt);
       fix.textContent = ok ? 'right' : 'was ' + nt.l;
       fix.className = 'fix ' + (ok ? 'ok' : 'bad');
       heads[i].classList.add(ok ? 'ok' : 'bad');
@@ -612,14 +749,16 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
     resetBlanks();
     setChecked(false, 0);
     startT = performance.now(); timeValid = true;
-    if (focusFirst) inputs[0].focus();
+    if (focusFirst && state.answer === 'type') inputs[0].focus();
   }
 
   /* ---- Weak spots card ---- */
   function renderSpots() {
     var g = stats.g;
     summaryEl.textContent = g.k ? g.k + (g.k === 1 ? ' drill' : ' drills') + ' checked · ' + Math.round(g.ok / g.n * 100) + '% of notes right' + (g.t ? ' · typical time ' + (g.t / 1000).toFixed(1) + ' s' : '') : '';
-    if (state.adaptive) {
+    if (state.pattern === 'mixed') {
+      queueEl.textContent = state.adaptive ? 'Leaning on your weak notes' : 'Random notes';
+    } else if (state.adaptive) {
       var q = candidates().filter(function (c) { var s = score(c); return s.seen && s.w >= WEAK; }).length;
       queueEl.textContent = 'Repeat queue: ' + q + (q === 1 ? ' drill' : ' drills');
     } else {
@@ -725,6 +864,21 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   /* A drill answered while the tab was in the background is not timed. */
   document.addEventListener('visibilitychange', function () { if (document.hidden) timeValid = false; });
 
+  function applyPatternUI() {
+    var mixed = state.pattern === 'mixed';
+    document.getElementById('fs-order').hidden = mixed;
+    document.getElementById('fs-roots').hidden = mixed;
+    document.getElementById('triad-note').hidden = mixed;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="pattern"]'), function (i) {
+    i.addEventListener('change', function () { state.pattern = i.value; applyPatternUI(); save(); newDrill(false, false); renderSpots(); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="answer"]'), function (i) {
+    i.addEventListener('change', function () { state.answer = i.value; save(); newDrill(false, false); renderSpots(); });
+  });
+  document.getElementById(state.pattern === 'mixed' ? 'pt-mixed' : 'pt-triad').checked = true;
+  document.getElementById(state.answer === 'fret' ? 'an-fret' : 'an-type').checked = true;
+  applyPatternUI();
   document.getElementById('lv' + state.level).checked = true;
   document.getElementById('or-' + state.order).checked = true;
   document.getElementById(state.adaptive ? 'pr-adaptive' : 'pr-random').checked = true;
@@ -1072,9 +1226,9 @@ legend { padding: 0; margin-bottom: 8px; font: 500 12px/1 var(--font-mono); lett
   /* ================= Tabs ================= */
   (function () {
     var PAGES = ['triads', 'chords'];
-    var TITLES = { triads: 'Major Triad Flash Drill', chords: 'Chord Flash Drill' };
+    var TITLES = { triads: 'Note Flash Drill', chords: 'Chord Flash Drill' };
     var LEDES = {
-      triads: 'Four notes at a time, no rhythm. Type the name of each note in its blank, then check. Drills you miss or answer slowly come back more often.',
+      triads: 'Four notes at a time, no rhythm. Name each note by typing its letter or by tapping it on the fretboard, then check. Notes you miss or answer slowly come back more often.',
       chords: 'Three notes stacked on the staff. Type the root, tap major, minor or diminished, then check. Chords you miss or answer slowly come back more often.'
     };
     var titleEl = document.getElementById('title'), ledeEl = document.getElementById('lede');

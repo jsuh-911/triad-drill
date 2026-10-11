@@ -1,7 +1,7 @@
 {
   "name": "Sight Reading Drills",
   "short_name": "Sight Reading",
-  "description": "Guitar sight-reading flash drills: name notes of a major triad, or name a stacked chord, on a treble staff.",
+  "description": "Guitar sight-reading flash drills: name notes (typed or tapped on the fretboard) or name a stacked chord on a treble staff.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
